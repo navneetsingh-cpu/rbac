@@ -22,7 +22,7 @@
             "input": "apps/rbac/public"
           }
         ],
-        "styles": ["apps/rbac/src/styles.scss"]
+        "styles": ["apps/rbac/src/styles.css"]
       },
       "configurations": {
         "production": {
