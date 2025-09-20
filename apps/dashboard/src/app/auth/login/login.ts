@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../service/auth.service';
 
 @Component({
   imports: [CommonModule, FormsModule, RouterModule],
   selector: 'app-login',
   templateUrl: './login.html',
+  providers: [AuthService],
 })
-export class LoginComponent implements OnInit {
-  // A boolean to track the current theme state
-  isDarkTheme = false;
-  hidePassword = true;
+export class LoginComponent {
+  private authService = inject(AuthService);
+  private router = inject(Router);
+
   // An object to hold the form data using ngModel
   loginForm = {
     email: '',
@@ -19,52 +21,32 @@ export class LoginComponent implements OnInit {
   };
 
   /**
-   * Initializes the component.
-   * On initialization, it checks for a saved theme preference in localStorage
-   * and applies the 'dark' class to the document's root element if needed.
-   */
-  ngOnInit(): void {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      this.isDarkTheme = savedTheme === 'dark';
-      if (this.isDarkTheme) {
-        document.documentElement.classList.add('dark');
-      }
-    } else {
-      // Check for system preference if no theme is saved
-      this.isDarkTheme = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches;
-      if (this.isDarkTheme) {
-        document.documentElement.classList.add('dark');
-      }
-    }
-  }
-
-  /**
-   * Toggles the dark/light theme.
-   * This method adds or removes the 'dark' class from the document's root element
-   * and saves the user's preference to localStorage for persistence.
-   */
-  toggleTheme(): void {
-    this.isDarkTheme = !this.isDarkTheme;
-    if (this.isDarkTheme) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }
-
-  /**
-   * Handles the form submission.
-   * In a real application, you would replace this with a call to an authentication service
-   * to validate the user's credentials against a backend.
+   * Handles the login form submission.
+   * It calls the AuthService to authenticate the user.
    */
   onLogin(): void {
-    console.log('Login form submitted:', this.loginForm);
-    // Here you would typically call an authentication service
-    // Example: this.authService.login(this.loginForm).subscribe(...)
+    console.log('Attempting to log in with:', this.loginForm);
+
+    // Call the login method from the AuthService
+    this.authService.login(this.loginForm).subscribe({
+      next: (response) => {
+        // Handle a successful login
+        console.log('Login successful', response);
+        alert('Logged in successfully!');
+
+        // You would typically save the auth token or user data here
+        // e.g., localStorage.setItem('token', response.token);
+
+        // Redirect the user to a dashboard or home page
+        this.router.navigate(['/dashboard']);
+      },
+      error: (error) => {
+        // Handle a failed login attempt
+        console.error('Login failed', error);
+        alert(
+          'Login failed: ' + (error.error.message || 'Invalid credentials.')
+        );
+      },
+    });
   }
 }

@@ -1,7 +1,7 @@
 // src/app/auth/auth.service.ts
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -20,9 +20,34 @@ export class AuthService {
     return this.http.post(url, userData);
   }
 
-  // You can add other authentication methods here, like login, logout, etc.
-  // login(credentials: any): Observable<any> {
-  //   const url = `${this.apiUrl}/login`;
-  //   return this.http.post(url, credentials);
-  // }
+  login(credentials: any): Observable<any> {
+    const url = `${this.apiUrl}/auth/login`;
+    console.log('Login credentials:', credentials);
+    const payload = {
+      username: credentials.email,
+      password: credentials.password,
+    };
+    return this.http.post(url, credentials).pipe(
+      // The tap operator allows you to perform side effects, like saving the token
+      tap((response: any) => {
+        if (response && response.access_token) {
+          localStorage.setItem('access_token', response.access_token);
+        }
+      })
+    );
+  }
+
+  // Method to retrieve the token for the interceptor
+  getToken(): string | null {
+    return localStorage.getItem('access_token');
+  }
+
+  // Method to check if the user is authenticated
+  isLoggedIn(): boolean {
+    return !!this.getToken();
+  }
+
+  logout(): void {
+    localStorage.removeItem('access_token');
+  }
 }
