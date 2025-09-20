@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   selector: 'app-login',
   templateUrl: './login.html',
 })

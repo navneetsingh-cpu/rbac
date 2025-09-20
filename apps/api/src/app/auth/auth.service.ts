@@ -1,5 +1,5 @@
 // apps/api/src/app/auth/auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
 import { User } from '@rbac/auth';
@@ -8,7 +8,7 @@ import { User } from '@rbac/auth';
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async validateUser(username: string, pass: string): Promise<any> {
@@ -28,9 +28,12 @@ export class AuthService {
   }
 
   async register(userDto: User) {
+    console.log('Existing userDto:', userDto);
+
     const user = await this.userService.findOne(userDto.username);
+    console.log('Existing user:', user);
     if (user) {
-      throw new UnauthorizedException('User already exists');
+      throw new ConflictException('User with this username already exists.');
     }
     const newUser = await this.userService.create(userDto);
     return newUser;
