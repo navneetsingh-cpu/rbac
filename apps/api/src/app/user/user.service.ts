@@ -16,8 +16,8 @@ export class UserService {
    * @param username The username to search for.
    * @returns A promise that resolves to the User object or undefined.
    */
-  async findOne(username: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({ where: { username } });
+  async findOne(email: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({ where: { email } });
   }
 
   /**

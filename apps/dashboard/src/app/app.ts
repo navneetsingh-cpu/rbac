@@ -5,7 +5,12 @@ import { Router, RouterModule } from '@angular/router';
 import { AuthService } from './service/auth.service';
 
 @Component({
-  imports: [RouterModule, HttpClientModule, CommonModule],
+  imports: [
+    RouterModule,
+    HttpClientModule,
+    CommonModule,
+    // StoreModule.forFeature and EffectsModule.forFeature should be imported in a module, not here
+  ],
   selector: 'app-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
