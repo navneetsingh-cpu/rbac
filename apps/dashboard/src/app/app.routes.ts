@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { LoginComponent } from './auth/login/login';
+import { DashboardComponent } from './dashboard/dashboard';
 
 export const appRoutes: Route[] = [
   {
@@ -15,5 +16,9 @@ export const appRoutes: Route[] = [
     path: 'signup',
     loadComponent: () =>
       import('./auth/signup/signup').then((m) => m.SignupComponent),
+  },
+  {
+    path: 'dashboard',
+    component: DashboardComponent, // The dashboard route
   },
 ];

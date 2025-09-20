@@ -27,7 +27,7 @@ export class AuthService {
       username: credentials.email,
       password: credentials.password,
     };
-    return this.http.post(url, credentials).pipe(
+    return this.http.post(url, payload).pipe(
       // The tap operator allows you to perform side effects, like saving the token
       tap((response: any) => {
         if (response && response.access_token) {

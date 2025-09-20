@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from './service/auth.service';
 
 @Component({
   imports: [RouterModule, HttpClientModule, CommonModule],
@@ -11,7 +12,8 @@ import { RouterModule } from '@angular/router';
 })
 export class App implements OnInit {
   protected title = 'rbac';
-
+  private authService = inject(AuthService);
+  private router = inject(Router);
   // A boolean to track the current theme state
   isDarkTheme = false;
   hidePassword = true;
@@ -48,5 +50,16 @@ export class App implements OnInit {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
     }
+  }
+
+  /**
+   * Logs the user out by clearing the token and redirecting to the login page.
+   */
+  logout(): void {
+    // Call the logout method from the AuthService
+    this.authService.logout();
+
+    // Navigate the user back to the login page
+    this.router.navigate(['/signin']);
   }
 }
