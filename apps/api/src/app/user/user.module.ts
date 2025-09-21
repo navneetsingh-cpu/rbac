@@ -1,11 +1,16 @@
-
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '@rbac/auth';
+import { Organization, Role, User } from '@rbac/auth';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [
+    TypeOrmModule.forFeature([
+      User,
+      Role, // <-- Add Role here
+      Organization, // <-- Add Organization here
+    ]),
+  ],
   providers: [UserService],
   exports: [UserService],
 })

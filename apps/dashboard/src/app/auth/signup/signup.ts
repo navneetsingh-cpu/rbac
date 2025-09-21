@@ -30,9 +30,9 @@ export class SignupComponent {
     const { email, password } = this.signupForm;
     const payload = { email, password };
 
-    console.log('Dispatching signup action:', payload);
+    console.log('Dispatching signup action with full payload:', payload);
 
-    // Dispatch the 'signup' action with the payload
+    // Dispatch the 'signup' action with the updated payload
     this.store.dispatch(signup(payload));
   }
 }

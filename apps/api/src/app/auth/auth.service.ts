@@ -1,18 +1,27 @@
-// apps/api/src/app/auth/auth.service.ts
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '../user/user.service';
-import { User } from '@rbac/auth';
+import { Organization, Role, User } from '@rbac/auth';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
+    @InjectRepository(Organization)
+    private organizationRepository: Repository<Organization>
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.userService.findOne(email);
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.userService.findOne(username);
     if (user && (await user.validatePassword(pass))) {
       const { password, ...result } = user;
       return result;
@@ -21,20 +30,49 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.username, sub: user.id };
+    // Fetch the user with their role and organization
+    const fullUser = await this.userService.findOneByIdWithRoleAndOrg(user.id);
+
+    console.log('Full user data:', fullUser);
+    if (!fullUser) {
+      throw new UnauthorizedException('User data incomplete');
+    }
+
+    console.log('fullUser:', fullUser);
+
+    // Create the payload with the user's ID, role, and organization ID
+    const payload = {
+      sub: fullUser.id,
+      role: fullUser.role.name,
+      orgId: fullUser.organization.id,
+    };
+
     return {
       access_token: this.jwtService.sign(payload),
     };
   }
 
   async register(userDto: User) {
-    console.log('Existing userDto:', userDto);
-
-    const user = await this.userService.findOne(userDto.email);
-    console.log('Existing user:', user);
-    if (user) {
+    const userExists = await this.userService.findOne(userDto.email);
+    if (userExists) {
       throw new ConflictException('User with this email already exists.');
     }
+
+    // Server-side assignment of default role and organization
+    const defaultRole = await this.roleRepository.findOne({
+      where: { name: 'Viewer' },
+    });
+    const defaultOrganization = await this.organizationRepository.findOne({
+      where: { name: 'TurboVets' },
+    });
+
+    if (!defaultRole || !defaultOrganization) {
+      throw new ConflictException('Default role or organization not found.');
+    }
+
+    userDto.role = defaultRole;
+    userDto.organization = defaultOrganization;
+
     const newUser = await this.userService.create(userDto);
     return newUser;
   }

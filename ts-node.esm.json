@@ -1,0 +1,8 @@
+{
+  "ts-node": {
+    "compilerOptions": {
+      "module": "esnext"
+    },
+    "esm": true
+  }
+}

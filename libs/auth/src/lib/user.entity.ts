@@ -1,5 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import * as bcrypt from 'bcryptjs';
+import { Role } from './role.entity';
+import { Task } from './task.entity';
+import { Organization } from './organization.entity';
 
 @Entity()
 export class User {
@@ -19,4 +28,14 @@ export class User {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+
+  @ManyToOne(() => Role, (role) => role.users)
+  role!: Role;
+
+  // Add the bi-directional relationship here
+  @OneToMany(() => Task, (task) => task.assignedTo)
+  tasks!: Task[];
+
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  organization!: Organization;
 }

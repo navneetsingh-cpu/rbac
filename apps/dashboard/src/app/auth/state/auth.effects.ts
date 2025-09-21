@@ -82,7 +82,8 @@ export class AuthEffects {
         tap((error) => {
           console.error('Signup failed', error);
           alert(
-            'Signup failed: ' + (error.error.error.message || 'Please try again.')
+            'Signup failed: ' +
+              (error.error.error.message || 'Please try again.')
           );
         })
       ),

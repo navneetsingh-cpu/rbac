@@ -6,11 +6,16 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideHttpClient, HttpClientModule } from '@angular/common/http';
+import {
+  provideHttpClient,
+  HttpClientModule,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import { provideState, provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { authReducer } from './auth/state/auth.reducer';
 import { AuthEffects } from './auth/state/auth.effects';
+import { AuthInterceptor } from './interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,6 +27,11 @@ export const appConfig: ApplicationConfig = {
     // NgRx Store and Effects Configuration for Standalone Apps
     provideStore(), // Provides the global store
     provideState('auth', authReducer), // Registers a feature state
-    provideEffects(AuthEffects), // Registers feature effects
+    provideEffects(AuthEffects), // Registers feature effects,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true,
+    },
   ],
 };

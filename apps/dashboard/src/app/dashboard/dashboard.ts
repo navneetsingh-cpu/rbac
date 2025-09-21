@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { TaskService } from '../task/task.service';
 
 interface Task {
   dueDate?: string | number | Date;
@@ -59,6 +60,14 @@ export class DashboardComponent {
     category: 'Work',
     completed: false,
   };
+
+  private taskService = inject(TaskService);
+
+  ngOnInit(): void {
+    this.taskService.getTasks().subscribe((data) => {
+      console.log('Fetched tasks from API:', data);
+    });
+  }
 
   get completedTasks(): Task[] {
     return this.tasks.filter((t) => t.completed);
