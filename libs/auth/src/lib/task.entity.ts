@@ -13,6 +13,9 @@ export class Task {
   @Column()
   description!: string;
 
+  @Column()
+  status!: string; // e.g., 'Todo', 'In Progress', 'Done'
+
   @ManyToOne(() => User, (user) => user.tasks)
   assignedTo!: User;
 

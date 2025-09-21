@@ -1,114 +1,117 @@
+// src/app/dashboard/dashboard.component.ts
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
+import {
+  CdkDragDrop,
+  moveItemInArray,
+  transferArrayItem,
+} from '@angular/cdk/drag-drop';
+import { TaskService } from '../task/task.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { TaskService, Task } from '../task/task.service';
+import { Router } from '@angular/router';
 
-// Remove local Task interface and import Task from TaskService
+// Import Task interface from the shared location to ensure consistency
+import { Task } from '../task/task.service';
 
 @Component({
   imports: [CommonModule, FormsModule, DragDropModule],
   selector: 'app-dashboard',
   templateUrl: './dashboard.html',
 })
-export class DashboardComponent {
-  tasks: Task[] = [
-    {
-      id: 1,
-      title: 'Finish report',
-      description: 'Complete the Q3 sales report for the team meeting.',
-      category: 'Work',
-      completed: false,
-    },
-    {
-      id: 2,
-      title: 'Buy groceries',
-      description: 'Milk, bread, and eggs.',
-      category: 'Personal',
-      completed: true,
-    },
-    {
-      id: 3,
-      title: 'Workout',
-      description: '30-minute run at the park.',
-      category: 'Personal',
-      completed: true,
-    },
-    {
-      id: 4,
-      title: 'Code review',
-      description: 'Review pull requests for the new feature branch.',
-      category: 'Work',
-      completed: false,
-    },
-  ];
+export class DashboardComponent implements OnInit {
+  todoTasks: Task[] = [];
+  inProgressTasks: Task[] = [];
+  doneTasks: Task[] = [];
 
-  filteredTasks: Task[] = this.tasks;
-  filter = 'all';
   showModal = false;
   newTask: any = {
     title: '',
     description: '',
     category: 'Work',
-    completed: false,
+    status: 'Todo', // Default status for new tasks
   };
+
+  showEditModal = false; // New property to control the edit modal
+  editingTask: Task | null = null; // Stores the task being edited
 
   private taskService = inject(TaskService);
 
   ngOnInit(): void {
-    this.taskService.getTasks().subscribe((data) => {
-      console.log('Fetched tasks from API:', data);
-    });
+    this.loadTasks();
   }
 
-  get completedTasks(): Task[] {
-    return this.tasks.filter((t: any) => t.completed);
-  }
-
-  get completionPercentage(): number {
-    return this.tasks.length > 0
-      ? (this.completedTasks.length / this.tasks.length) * 100
-      : 0;
-  }
-
-  createTask(): void {
-    // Call the service to create a task via API
-    this.taskService.createTask(this.newTask).subscribe({
-      next: (response) => {
-        // Add the newly created task (with its ID from the API) to the local list
-        this.tasks.push(response);
-        this.showModal = false;
-        this.newTask = {
-          title: '',
-          description: '',
-          category: 'Work',
-          completed: false,
-        };
-        this.setFilter(this.filter); // Refresh the filtered list
-      },
-      error: (error) => {
-        console.error('Failed to create task', error);
-        alert('Failed to create task. Please try again.');
-      },
-    });
-  }
-  setFilter(category: string): void {
-    this.filter = category;
-    if (category === 'all') {
-      this.filteredTasks = this.tasks;
-    } else {
-      this.filteredTasks = this.tasks.filter(
-        (task) => task.category.toLowerCase() === category.toLowerCase()
+  loadTasks(): void {
+    this.taskService.getTasks().subscribe((tasks: any) => {
+      this.todoTasks = tasks.filter((t: Task) => t.status === 'Todo');
+      this.inProgressTasks = tasks.filter(
+        (t: Task) => t.status === 'InProgress'
       );
+      this.doneTasks = tasks.filter((t: Task) => t.status === 'Done');
+    });
+  }
+
+  // Refactored onDrop method
+  onDrop(event: CdkDragDrop<Task[]>) {
+    // If the item is dropped in the same container, just reorder
+    if (event.previousContainer === event.container) {
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+    } else {
+      // Transfer the item to the new container
+      transferArrayItem(
+        event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
+
+      // Determine the new status based on the destination list ID
+      const newStatus =
+        event.container.id === 'doneList'
+          ? 'Done'
+          : event.container.id === 'inProgressList'
+          ? 'InProgress'
+          : 'Todo';
+      const movedTask = event.container.data[event.currentIndex];
+
+      // Update the task's status locally and then call the API
+      movedTask.status = newStatus;
+      this.taskService.editTask(movedTask.id, movedTask).subscribe({
+        next: (response) => console.log('Task status updated:', response),
+        error: (error) => console.error('Failed to update task status:', error),
+      });
     }
   }
 
+  // New method to handle task editing
+  editTask(task: Task): void {
+    // This is a simplified example. You would typically open a modal
+    // populated with the task data and then call taskService.editTask()
+    const updatedTask = { ...task, title: task.title + ' (Edited)' }; // Example update
+    this.taskService.editTask(task.id, updatedTask).subscribe({
+      next: (response) => {
+        // Find and update the task in the local array
+        // (You might need to refresh the whole list for simplicity)
+        this.loadTasks();
+      },
+      error: (error) => console.error('Failed to edit task:', error),
+    });
+  }
+
+  // Refactored deleteTask to remove from the correct list
   deleteTask(id: string): void {
     this.taskService.deleteTask(id).subscribe({
       next: () => {
-        this.tasks = this.tasks.filter((task) => task.id !== '' + id);
-        this.setFilter(this.filter);
+        // Remove the task from the local lists
+        this.todoTasks = this.todoTasks.filter((task) => task.id !== id);
+        this.inProgressTasks = this.inProgressTasks.filter(
+          (task) => task.id !== id
+        );
+        this.doneTasks = this.doneTasks.filter((task) => task.id !== id);
       },
       error: (error) => {
         console.error('Failed to delete task', error);
@@ -117,9 +120,27 @@ export class DashboardComponent {
     });
   }
 
-  onDrop(event: CdkDragDrop<any>): void {
-    moveItemInArray(this.tasks, event.previousIndex, event.currentIndex);
-    this.setFilter(this.filter); // Refresh the filtered list after drag-and-drop
+  createTask(): void {
+    this.taskService.createTask(this.newTask).subscribe({
+      next: (response) => {
+        // Add the new task to the 'Todo' list by default
+        this.todoTasks.push(response);
+        this.showModal = false;
+        this.newTask = {
+          title: '',
+          description: '',
+          category: 'Work',
+          status: 'Todo',
+        };
+      },
+      error: (error) => {
+        console.error('Failed to create task', error);
+      },
+    });
+  }
+  openEditTaskModal(task: Task): void {
+    this.editingTask = { ...task }; // Clone the task to avoid direct mutation
+    this.showEditModal = true;
   }
 
   openCreateTaskModal(): void {

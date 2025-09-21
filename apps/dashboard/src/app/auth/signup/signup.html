@@ -62,6 +62,27 @@
         />
       </div>
 
+      <!-- Role Dropdown -->
+      <div>
+        <label
+          for="role"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Role</label
+        >
+        <select
+          id="role"
+          name="role"
+          [(ngModel)]="signupForm.role"
+          required
+          class="w-full p-3 mt-1 border border-gray-300 rounded-md shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="1">Owner</option>
+          <option value="2">Admin</option>
+          <option value="3">Viewer</option>
+        </select>
+      </div>
+
+      <!-- Submit Button -->
       <div>
         <button
           type="submit"

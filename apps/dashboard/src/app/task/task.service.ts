@@ -11,6 +11,7 @@ export interface Task {
   category: string;
   completed: boolean;
   dueDate?: Date;
+  status: string;
   // Add other task properties as needed (e.g., status, due date)
 }
 

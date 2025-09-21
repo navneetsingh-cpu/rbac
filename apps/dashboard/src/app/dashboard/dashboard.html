@@ -6,33 +6,9 @@
       Task Dashboard
     </h1>
   </div>
-
   <div
     class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0 md:space-x-4"
   >
-    <div class="flex space-x-2">
-      <button
-        (click)="setFilter('all')"
-        class="px-4 py-2 rounded-full text-sm font-medium"
-        [ngClass]="{'bg-blue-600 text-white': filter === 'all', 'bg-gray-300 dark:bg-gray-700 dark:text-gray-300': filter !== 'all'}"
-      >
-        All
-      </button>
-      <button
-        (click)="setFilter('work')"
-        class="px-4 py-2 rounded-full text-sm font-medium"
-        [ngClass]="{'bg-blue-600 text-white': filter === 'work', 'bg-gray-300 dark:bg-gray-700 dark:text-gray-300': filter !== 'work'}"
-      >
-        Work
-      </button>
-      <button
-        (click)="setFilter('personal')"
-        class="px-4 py-2 rounded-full text-sm font-medium"
-        [ngClass]="{'bg-blue-600 text-white': filter === 'personal', 'bg-gray-300 dark:bg-gray-700 dark:text-gray-300': filter !== 'personal'}"
-      >
-        Personal
-      </button>
-    </div>
     <button
       (click)="openCreateTaskModal()"
       class="cursor-pointer px-6 py-2 rounded-lg bg-green-600 text-white font-medium hover:bg-green-700 transition-colors duration-300"
@@ -41,112 +17,200 @@
     </button>
   </div>
 
-  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-    <div
-      cdkDropList
-      id="taskList"
-      [cdkDropListData]="tasks"
-      (cdkDropListDropped)="onDrop($event)"
-      class="space-y-4"
-    >
+  <div class="grid gap-6 md:grid-cols-3">
+    <div class="bg-gray-200 dark:bg-gray-800 rounded-lg p-4">
+      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+        To Do
+      </h2>
       <div
-        *ngFor="let task of filteredTasks"
-        cdkDrag
-        class="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
+        cdkDropList
+        id="todoList"
+        [cdkDropListData]="todoTasks"
+        [cdkDropListConnectedTo]="['inProgressList', 'doneList']"
+        (cdkDropListDropped)="onDrop($event)"
+        class="min-h-[100px] p-2 space-y-4"
       >
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-            {{ task.title }}
-          </h3>
-          <span
-            class="text-xs font-medium px-2 py-1 rounded-full"
-            [ngClass]="{'bg-blue-200 text-blue-800': task.category === 'Work', 'bg-green-200 text-green-800': task.category === 'Personal'}"
-            >{{ task.category }}</span
-          >
-        </div>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          {{ task.description }}
-        </p>
         <div
-          class="mt-4 flex justify-between items-center text-sm text-gray-500 dark:text-gray-400"
+          *ngFor="let task of todoTasks"
+          cdkDrag
+          class="p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
         >
-          <span>Due: {{ task.dueDate | date }}</span>
-          <button
-            (click)="deleteTask(task.id)"
-            class="text-red-500 hover:text-red-700"
-          >
-            Delete
-          </button>
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ task.title }}
+            </h3>
+            <span
+              class="text-xs font-medium px-2 py-1 rounded-full"
+              [ngClass]="{'bg-blue-200 text-blue-800': task.category === 'Work', 'bg-green-200 text-green-800': task.category === 'Personal'}"
+              >{{ task.category }}</span
+            >
+          </div>
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            {{ task.description }}
+          </p>
+          <div class="mt-4 flex justify-end space-x-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="text-blue-500 hover:text-blue-700"
+            >
+              Edit
+            </button>
+            <button
+              (click)="deleteTask(task.id)"
+              class="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-200 dark:bg-gray-800 rounded-lg p-4">
+      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+        In Progress
+      </h2>
+      <div
+        cdkDropList
+        id="inProgressList"
+        [cdkDropListData]="inProgressTasks"
+        [cdkDropListConnectedTo]="['todoList', 'doneList']"
+        (cdkDropListDropped)="onDrop($event)"
+        class="min-h-[100px] p-2 space-y-4"
+      >
+        <div
+          *ngFor="let task of inProgressTasks"
+          cdkDrag
+          class="p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
+        >
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ task.title }}
+            </h3>
+            <span
+              class="text-xs font-medium px-2 py-1 rounded-full"
+              [ngClass]="{'bg-blue-200 text-blue-800': task.category === 'Work', 'bg-green-200 text-green-800': task.category === 'Personal'}"
+              >{{ task.category }}</span
+            >
+          </div>
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            {{ task.description }}
+          </p>
+          <div class="mt-4 flex justify-end space-x-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="text-blue-500 hover:text-blue-700"
+            >
+              Edit
+            </button>
+            <button
+              (click)="deleteTask(task.id)"
+              class="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-gray-200 dark:bg-gray-800 rounded-lg p-4">
+      <h2 class="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+        Done
+      </h2>
+      <div
+        cdkDropList
+        id="doneList"
+        [cdkDropListData]="doneTasks"
+        [cdkDropListConnectedTo]="['todoList', 'inProgressList']"
+        (cdkDropListDropped)="onDrop($event)"
+        class="min-h-[100px] p-2 space-y-4"
+      >
+        <div
+          *ngFor="let task of doneTasks"
+          cdkDrag
+          class="p-4 bg-white dark:bg-gray-700 rounded-lg shadow-md cursor-pointer hover:shadow-lg transition-shadow duration-200"
+        >
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ task.title }}
+            </h3>
+            <span
+              class="text-xs font-medium px-2 py-1 rounded-full"
+              [ngClass]="{'bg-blue-200 text-blue-800': task.category === 'Work', 'bg-green-200 text-green-800': task.category === 'Personal'}"
+              >{{ task.category }}</span
+            >
+          </div>
+          <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            {{ task.description }}
+          </p>
+          <div class="mt-4 flex justify-end space-x-2">
+            <button
+              (click)="openEditTaskModal(task)"
+              class="text-blue-500 hover:text-blue-700"
+            >
+              Edit
+            </button>
+            <button
+              (click)="deleteTask(task.id)"
+              class="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
+<div
+  *ngIf="showModal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center"
+>
   <div
-    *ngIf="showModal"
-    class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center"
+    class="relative p-8 w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
   >
-    <div
-      class="relative p-8 w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
-    >
-      <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-        Create Task
-      </h2>
-      <form (ngSubmit)="createTask()">
-        <input
-          type="text"
-          [(ngModel)]="newTask.title"
-          name="title"
-          placeholder="Task Title"
-          class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        />
-        <textarea
-          [(ngModel)]="newTask.description"
-          name="description"
-          placeholder="Description"
-          class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        ></textarea>
-        <select
-          [(ngModel)]="newTask.category"
-          name="category"
-          class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-        >
-          <option value="Work">Work</option>
-          <option value="Personal">Personal</option>
-        </select>
-        <div class="flex justify-end space-x-2">
-          <button
-            type="button"
-            (click)="showModal = false"
-            class="px-4 py-2 rounded-md bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            class="px-4 py-2 rounded-md bg-blue-600 text-white"
-          >
-            Create
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-  <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
-    Task Completion
-  </h2>
-  <div class="flex flex-col space-y-4">
-    <div class="relative w-full h-8 bg-gray-200 rounded-full dark:bg-gray-700">
-      <div
-        class="h-8 bg-green-500 rounded-full transition-all duration-500"
-        [style.width.%]="completionPercentage"
-      ></div>
-      <span
-        class="absolute inset-0 flex items-center justify-center text-sm font-semibold text-white"
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+      Create Task
+    </h2>
+    <form (ngSubmit)="createTask()">
+      <input
+        type="text"
+        [(ngModel)]="newTask.title"
+        name="title"
+        placeholder="Task Title"
+        class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      />
+      <textarea
+        [(ngModel)]="newTask.description"
+        name="description"
+        placeholder="Description"
+        class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+      ></textarea>
+      <select
+        [(ngModel)]="newTask.category"
+        name="category"
+        class="w-full p-2 mb-4 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
       >
-        {{ completedTasks.length }} / {{ tasks.length }} tasks completed ({{
-        completionPercentage.toFixed(0) }}%)
-      </span>
-    </div>
+        <option value="Work">Work</option>
+        <option value="Personal">Personal</option>
+      </select>
+      <div class="flex justify-end space-x-2">
+        <button
+          type="button"
+          (click)="showModal = false"
+          class="px-4 py-2 rounded-md bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-md bg-blue-600 text-white"
+        >
+          Create
+        </button>
+      </div>
+    </form>
   </div>
 </div>

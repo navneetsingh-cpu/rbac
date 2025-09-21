@@ -59,18 +59,17 @@ export class AuthService {
     }
 
     // Server-side assignment of default role and organization
-    const defaultRole = await this.roleRepository.findOne({
-      where: { name: 'Viewer' },
-    });
+    // const defaultRole = await this.roleRepository.findOne({
+    //   where: { name: 'Viewer' },
+    // });
     const defaultOrganization = await this.organizationRepository.findOne({
       where: { name: 'Microsoft' },
     });
 
-    if (!defaultRole || !defaultOrganization) {
+    if (!defaultOrganization) {
       throw new ConflictException('Default role or organization not found.');
     }
 
-    userDto.role = defaultRole;
     userDto.organization = defaultOrganization;
 
     const newUser = await this.userService.create(userDto);

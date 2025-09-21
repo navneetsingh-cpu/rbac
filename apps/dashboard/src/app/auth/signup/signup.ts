@@ -19,6 +19,8 @@ export class SignupComponent {
     email: '',
     password: '',
     confirmPassword: '',
+    organization: '',
+    role: '1', // Default to 'Owner'
   };
 
   onSignup(): void {
@@ -27,8 +29,11 @@ export class SignupComponent {
       return;
     }
 
-    const { email, password } = this.signupForm;
-    const payload = { email, password };
+    // Destructure all form data, including the new fields
+    const { email, password, organization, role } = this.signupForm;
+
+    // Create the payload for the dispatched action
+    const payload = { email, password, organization, role };
 
     console.log('Dispatching signup action with full payload:', payload);
 

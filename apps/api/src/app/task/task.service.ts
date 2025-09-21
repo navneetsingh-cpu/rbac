@@ -13,10 +13,15 @@ export class TaskService {
 
   async create(task: Task, user: User): Promise<Task> {
     const newTask = this.taskRepository.create({
-      ...task,
+      title: task.title,
+      description: task.description,
       assignedTo: user,
+      status: 'Todo',
+      organization: user.organization,
     });
-    return this.taskRepository.save(newTask);
+    await this.taskRepository.insert(newTask); //
+
+    return newTask; // Return the created object
   }
 
   async findAllForUser(user: User): Promise<Task[]> {

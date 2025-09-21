@@ -15,13 +15,13 @@ export class Role {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ unique: true })
+  @Column()
   name!: string; // e.g., 'Owner', 'Admin', 'Viewer'
 
   @OneToMany(() => User, (user) => user.role)
   users!: User[];
 
-  @ManyToMany(() => Permission, permission => permission.roles)
+  @ManyToMany(() => Permission, (permission) => permission.roles)
   @JoinTable()
   permissions!: Permission[];
 }
