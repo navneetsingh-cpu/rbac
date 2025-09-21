@@ -35,3 +35,8 @@ npm run compodoc:api
 ```
 
 and check the documentation folder html files
+
+Swagger URL
+```
+http://localhost:3000/api
+```

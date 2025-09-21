@@ -7,9 +7,24 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const config = new DocumentBuilder()
+    .setTitle('Authentication API')
+    .setDescription(
+      'The API for user login, registration, and task management.'
+    )
+    .setVersion('1.0')
+    .addTag('auth')
+    .addTag('tasks')
+    .addBearerAuth() // Add this line to enable JWT authentication
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
   app.enableCors();
   app.useGlobalInterceptors(new AuditLogInterceptor()); // Global application
