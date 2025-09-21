@@ -5,9 +5,12 @@ import { Observable } from 'rxjs';
 
 // Define a Task interface for type safety
 export interface Task {
-  id?: string;
+  id?: any;
   title: string;
   description: string;
+  category: string;
+  completed: boolean;
+  dueDate?: Date;
   // Add other task properties as needed (e.g., status, due date)
 }
 
