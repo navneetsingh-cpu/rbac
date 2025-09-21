@@ -29,8 +29,8 @@ export class AuthService {
     return this.http.post(url, payload).pipe(
       // The tap operator allows you to perform side effects, like saving the token
       tap((response: any) => {
-        if (response && response.access_token) {
-          localStorage.setItem('access_token', response.access_token);
+        if (response && response.accessToken) {
+          localStorage.setItem('access_token', response.accessToken);
         }
       })
     );

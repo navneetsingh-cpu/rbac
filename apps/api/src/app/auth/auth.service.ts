@@ -48,7 +48,7 @@ export class AuthService {
     };
 
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 
@@ -63,7 +63,7 @@ export class AuthService {
       where: { name: 'Viewer' },
     });
     const defaultOrganization = await this.organizationRepository.findOne({
-      where: { name: 'TurboVets' },
+      where: { name: 'Microsoft' },
     });
 
     if (!defaultRole || !defaultOrganization) {
