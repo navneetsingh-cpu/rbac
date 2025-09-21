@@ -6,7 +6,9 @@
     "setup": "npm install --legacy-peer-deps",
     "start:ui": "npx nx run dashboard:serve",
     "start:api": "npx nx run api:serve",
-    "start": "npx nx run-many --target=serve --projects=dashboard,api --parallel"
+    "start": "npx nx run-many --target=serve --projects=dashboard,api --parallel",
+    "compodoc": "compodoc -p tsconfig.json -s -o docs",
+    "compodoc:api": "compodoc -p apps/api/tsconfig.app.json -s -o docs/api"
   },
   "private": true,
   "dependencies": {
@@ -48,6 +50,7 @@
     "@angular/cli": "~20.2.0",
     "@angular/compiler-cli": "~20.2.0",
     "@angular/language-service": "~20.2.0",
+    "@compodoc/compodoc": "^1.1.30",
     "@eslint/js": "^9.8.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.0",
