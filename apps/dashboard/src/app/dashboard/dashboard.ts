@@ -9,9 +9,7 @@ import {
 } from '@angular/cdk/drag-drop';
 import { TaskService } from '../task/task.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
-import { Router } from '@angular/router';
 
-// Import Task interface from the shared location to ensure consistency
 import { Task } from '../task/task.service';
 
 @Component({
@@ -20,9 +18,12 @@ import { Task } from '../task/task.service';
   templateUrl: './dashboard.html',
 })
 export class DashboardComponent implements OnInit {
+  tasks: Task[] = [];
+
   todoTasks: Task[] = [];
   inProgressTasks: Task[] = [];
   doneTasks: Task[] = [];
+  filter = 'all';
 
   showModal = false;
   newTask: any = {
@@ -37,7 +38,6 @@ export class DashboardComponent implements OnInit {
     title: ' ',
     description: ' ',
     category: 'Work',
-    completed: false,
     status: 'Todo',
   };
 
@@ -49,12 +49,49 @@ export class DashboardComponent implements OnInit {
 
   loadTasks(): void {
     this.taskService.getTasks().subscribe((tasks: any) => {
-      this.todoTasks = tasks.filter((t: Task) => t.status === 'Todo');
-      this.inProgressTasks = tasks.filter(
-        (t: Task) => t.status === 'InProgress'
-      );
-      this.doneTasks = tasks.filter((t: Task) => t.status === 'Done');
+      // Populate the master list
+      this.tasks = tasks;
+      // Immediately apply the current filter
+      this.setFilter(this.filter);
     });
+  }
+
+  get totalTasks(): number {
+    return (
+      this.todoTasks.length +
+      this.inProgressTasks.length +
+      this.doneTasks.length
+    );
+  }
+
+  // Gets the percentage of completed tasks
+  get completionPercentage(): number {
+    return this.totalTasks > 0
+      ? (this.doneTasks.length / this.totalTasks) * 100
+      : 0;
+  }
+
+  /**
+   * Filters the tasks by category and populates the Kanban board lists.
+   * @param category The category to filter by ('all', 'work', 'personal').
+   */
+  setFilter(category: string): void {
+    this.filter = category;
+
+    // Filter the master `tasks` list based on the selected category
+    const filteredMasterList =
+      category === 'all'
+        ? this.tasks
+        : this.tasks.filter(
+            (task) => task.category.toLowerCase() === category.toLowerCase()
+          );
+
+    // Distribute the filtered tasks into the Kanban board columns
+    this.todoTasks = filteredMasterList.filter((t) => t.status === 'Todo');
+    this.inProgressTasks = filteredMasterList.filter(
+      (t) => t.status === 'InProgress'
+    );
+    this.doneTasks = filteredMasterList.filter((t) => t.status === 'Done');
   }
 
   // Refactored onDrop method

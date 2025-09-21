@@ -33,7 +33,6 @@ export class AuthService {
     // Fetch the user with their role and organization
     const fullUser = await this.userService.findOneByIdWithRoleAndOrg(user.id);
 
-    console.log('Full user data:', fullUser);
     if (!fullUser) {
       throw new UnauthorizedException('User data incomplete');
     }

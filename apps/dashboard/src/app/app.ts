@@ -17,7 +17,7 @@ import { AuthService } from './service/auth.service';
 })
 export class App implements OnInit {
   protected title = 'rbac';
-  private authService = inject(AuthService);
+  public authService = inject(AuthService);
   private router = inject(Router);
   // A boolean to track the current theme state
   isDarkTheme = false;

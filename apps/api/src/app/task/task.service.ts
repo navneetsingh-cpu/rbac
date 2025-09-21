@@ -16,6 +16,7 @@ export class TaskService {
       title: task.title,
       description: task.description,
       assignedTo: user,
+      category: task.category,
       status: 'Todo',
       organization: user.organization,
     });

@@ -27,6 +27,8 @@ export class TaskController {
   async create(@Body() task: Task, @Request() req) {
     // Only 'Owner' can create tasks.
     // The RolesGuard decorator handles this check automatically.
+    console.log('Creating task with data:', task);
+    console.log('Request user:', req.user);
     return this.taskService.create(task, req.user);
   }
 

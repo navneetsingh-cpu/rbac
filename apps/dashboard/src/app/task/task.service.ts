@@ -9,10 +9,7 @@ export interface Task {
   title: string;
   description: string;
   category: string;
-  completed: boolean;
-  dueDate?: Date;
   status: string;
-  // Add other task properties as needed (e.g., status, due date)
 }
 
 // Define an AuditLogEntry interface
