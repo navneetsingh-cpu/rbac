@@ -28,7 +28,7 @@ export class TaskService {
   private apiUrl = 'http://localhost:3000/api';
 
   private taskApiUrl = `${this.apiUrl}/tasks`;
-  private auditUrl = `${this.apiUrl}/audit-log`;
+  private auditUrl = `${this.apiUrl}/tasks/audit-log`;
 
   /**
    * Creates a new task.

@@ -9,6 +9,7 @@ import {
   Delete,
   UseGuards,
   Request,
+  ConflictException,
 } from '@nestjs/common';
 
 import { Task } from '@rbac/auth';
@@ -16,6 +17,8 @@ import { TaskService } from './task.service';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('tasks')
@@ -54,5 +57,24 @@ export class TaskController {
     // Only 'Owner' and 'Admin' can delete tasks.
     // The RolesGuard decorator handles this check.
     return this.taskService.delete(id);
+  }
+
+  @Get('audit-log')
+  @Roles('Owner', 'Admin')
+  async getAuditLog() {
+    const logPath = path.join(__dirname, '..', '..', 'audit.log');
+    try {
+      const logData = fs.readFileSync(logPath, 'utf8');
+      const logEntries = logData
+        .split('\n')
+        .filter(Boolean)
+        .map((line) => JSON.parse(line));
+      return logEntries;
+    } catch (error) {
+      if (error.code === 'ENOENT') {
+        throw new ConflictException('Audit log file not found.');
+      }
+      throw new ConflictException('Failed to read audit log.');
+    }
   }
 }

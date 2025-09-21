@@ -3,8 +3,10 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
+    "setup": "npm install --legacy-peer-deps",
     "start:ui": "npx nx run dashboard:serve",
-    "start:api": "npx nx run api:serve"
+    "start:api": "npx nx run api:serve",
+    "start": "npx nx run-many --target=serve --projects=dashboard,api --parallel"
   },
   "private": true,
   "dependencies": {

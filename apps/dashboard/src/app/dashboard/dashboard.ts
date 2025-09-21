@@ -7,7 +7,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
-import { TaskService } from '../task/task.service';
+import { AuditLogEntry, TaskService } from '../task/task.service';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { Task } from '../task/task.service';
@@ -164,6 +164,40 @@ export class DashboardComponent implements OnInit {
       error: (error) => {
         console.error('Failed to delete task', error);
         alert('Failed to delete task.');
+      },
+    });
+  }
+
+  getAuditLog(): void {
+    this.taskService.getAuditLog().subscribe({
+      next: (logs: AuditLogEntry[]) => {
+        // 1. Convert the log data to a formatted JSON string
+        const logData = JSON.stringify(logs, null, 2);
+
+        // 2. Create a Blob from the JSON string
+        const blob = new Blob([logData], { type: 'application/json' });
+
+        // 3. Create a temporary URL for the Blob
+        const url = window.URL.createObjectURL(blob);
+
+        // 4. Create a temporary link element
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'audit-log.json'; // Set the filename
+
+        // 5. Append the link to the body and click it to trigger the download
+        document.body.appendChild(a);
+        a.click();
+
+        // 6. Clean up the temporary URL and element
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+
+        alert('Audit log downloaded successfully!');
+      },
+      error: (error) => {
+        console.error('Failed to retrieve audit log', error);
+        alert('Failed to retrieve audit log. Please try again.');
       },
     });
   }
