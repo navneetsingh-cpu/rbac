@@ -33,7 +33,13 @@ export class DashboardComponent implements OnInit {
   };
 
   showEditModal = false; // New property to control the edit modal
-  editingTask: Task | null = null; // Stores the task being edited
+  editingTask: Task | null = {
+    title: ' ',
+    description: ' ',
+    category: 'Work',
+    completed: false,
+    status: 'Todo',
+  };
 
   private taskService = inject(TaskService);
 
@@ -87,19 +93,24 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // New method to handle task editing
-  editTask(task: Task): void {
-    // This is a simplified example. You would typically open a modal
-    // populated with the task data and then call taskService.editTask()
-    const updatedTask = { ...task, title: task.title + ' (Edited)' }; // Example update
-    this.taskService.editTask(task.id, updatedTask).subscribe({
-      next: (response) => {
-        // Find and update the task in the local array
-        // (You might need to refresh the whole list for simplicity)
-        this.loadTasks();
-      },
-      error: (error) => console.error('Failed to edit task:', error),
-    });
+  editTask(): void {
+    if (this.editingTask && this.editingTask.id) {
+      this.taskService
+        .editTask(this.editingTask.id, this.editingTask)
+        .subscribe({
+          next: (response) => {
+            console.log('Task updated successfully:', response);
+            // Refresh the list to reflect the changes
+            this.loadTasks();
+            // Hide the modal after a successful update
+            this.showEditModal = false;
+          },
+          error: (error) => {
+            console.error('Failed to update task:', error);
+            alert('Failed to save changes. Please try again.');
+          },
+        });
+    }
   }
 
   // Refactored deleteTask to remove from the correct list

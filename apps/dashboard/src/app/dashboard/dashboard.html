@@ -214,3 +214,80 @@
     </form>
   </div>
 </div>
+
+<div
+  *ngIf="showEditModal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center"
+>
+  <div
+    *ngIf="editingTask"
+    class="relative p-8 w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl"
+  >
+    <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
+      Edit Task
+    </h2>
+    <form (ngSubmit)="editTask()">
+      <div class="mb-4">
+        <label
+          for="edit-title"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Title</label
+        >
+        <input
+          type="text"
+          id="edit-title"
+          name="title"
+          [(ngModel)]="editingTask.title"
+          class="w-full p-2 mt-1 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        />
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="edit-description"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Description</label
+        >
+        <textarea
+          id="edit-description"
+          name="description"
+          [(ngModel)]="editingTask.description"
+          class="w-full p-2 mt-1 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        ></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label
+          for="edit-category"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >Category</label
+        >
+        <select
+          id="edit-category"
+          name="category"
+          [(ngModel)]="editingTask.category"
+          class="w-full p-2 mt-1 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+        >
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+        </select>
+      </div>
+
+      <div class="flex justify-end space-x-2">
+        <button
+          type="button"
+          (click)="showEditModal = false"
+          class="px-4 py-2 rounded-md bg-gray-300 dark:bg-gray-700 dark:text-gray-300"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-md bg-blue-600 text-white"
+        >
+          Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
