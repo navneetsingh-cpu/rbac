@@ -7,7 +7,6 @@
     "start:ui": "npx nx run dashboard:serve",
     "start:api": "npx nx run api:serve",
     "start": "npx nx run-many --target=serve --projects=dashboard,api --parallel",
-    "compodoc": "compodoc -p tsconfig.json -s -o docs",
     "compodoc:api": "compodoc -p apps/api/tsconfig.app.json -s -o docs/api"
   },
   "private": true,
