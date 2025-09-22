@@ -4,13 +4,7 @@ import { Organization, Role, User } from '@rbac/auth';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      User,
-      Role, // <-- Add Role here
-      Organization, // <-- Add Organization here
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Role, Organization])],
   providers: [UserService],
   exports: [UserService],
 })

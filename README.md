@@ -31,7 +31,7 @@ API Docs
 
 Run 
 ```sh
-npm run compodoc:api
+All documentation is under documentation\index.html
 ```
 
 and check the documentation folder html files

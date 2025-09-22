@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Role } from '@rbac/auth';
 import { Organization } from '@rbac/auth';
 
+// Seeds the SQL lite database with initial roles and an organization if they do not already exist.
 @Injectable()
 export class InitializationService implements OnModuleInit {
   constructor(

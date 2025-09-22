@@ -22,7 +22,7 @@ import { InitializationService } from './initialization.service';
       }),
       inject: [ConfigService],
     }),
-    TypeOrmModule.forFeature([Role, Organization]), // <-- ADD THIS LINE
+    TypeOrmModule.forFeature([Role, Organization]),
     AuthModule,
     TaskModule,
   ],
