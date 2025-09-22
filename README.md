@@ -42,6 +42,8 @@ http://localhost:3000/api
 ```
 
 Notes:
+
+```
 . Drag and drop works to move tasks and change statuses ( saved to DB)
 . db.sqlite will be created automatically and seeded once Nest JS app is run ( delelte it , re-run if you face any issues)
 . Dark mode toggle is there
@@ -49,3 +51,4 @@ Notes:
 . Uses (Angular + TailwindCSS) + Nest JS
 . There is a filter on UI for Work and Personal type tasks
 . Small bar chart on UI to show progress
+```
